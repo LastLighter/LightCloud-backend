@@ -1,0 +1,80 @@
+server:
+  port: 80
+  # 上下文路径，所有接口前都会自带
+  servlet:
+    context-path: /api
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/lightcloud
+    username: root
+    password: 2502542202
+    type: com.alibaba.druid.pool.DruidDataSource
+  mail:
+    user-name: pyr021021@foxmail.com
+    password: rakijdesitmmdfha
+    # 按qq的文档行事
+    host: smtp.qq.com
+    port: 465
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            socketFactory:
+              class: jakarta.net.ssl.SSLSocketFactory
+        debug: true
+    default-encoding: UTF-8
+  data:
+    redis:
+      port: 6379
+      host: 172.18.30.13
+      # 切换客户端的库，默认是lettuce
+      client-type: lettuce
+      lettuce:
+        pool:
+          # 最大可用连接
+          max-active: 20
+          # 最大等待数（无连接可用时会等待，超过这个数当然就直接拒绝连接）
+          max-wait: -1
+          # 最大空闲连接（超过这个数就会被销毁）
+          max-idle: 12
+          # 最小空闲连接
+          min-idle: 4
+      timeout: 2000
+  servlet:
+    multipart:
+      max-file-size: 10MB
+# spring的日志管理
+logging:
+  level:
+    root: info
+  file:
+    # 日志文件的位置
+    path: C:\Users\Pyr\Desktop\practice\LightCloud\log
+mybatis:
+  configuration:
+    #配置下划线表名（字段名）自动对应驼峰的映射
+    map-underscore-to-camel-case: true
+    # 开启sql日志输出
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 项目配置
+light-cloud:
+  app:
+    config-file-name: runtime-config.properties
+    avatar-folder-name: avatar
+    avatar-prefix: avatar-
+    default-avatar-name: light-cloud-avatar.jpg
+    token-expired-minutes: 360
+    user-file-folder-name: userFile
+    temp-folder-name: temp
+    segment-length: 15
+    screen-shot-width: 200
+    default-config:
+      mail-subject: 验证码
+      mail-content: 您好，您的验证码是 %s ，五分钟内有效，请注意查收~
+      base-space: 10
+      administrator-email: 2746115082@qq.com
+
