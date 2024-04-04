@@ -45,7 +45,7 @@ public class UserSecurity {
         }
 
         if(userIdentity != null){
-            if(!userIdentity.equals(identity) && !userIdentity.equals(Constant.USER_IDENTITY_ADMINISTRATOR)){
+            if(!userIdentity.equals(identity) && userIdentity.equals(Constant.USER_IDENTITY_ADMINISTRATOR)){
                 throw new CustomException("无权限操作");
             }
         }

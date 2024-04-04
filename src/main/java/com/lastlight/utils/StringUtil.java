@@ -23,7 +23,7 @@ public class StringUtil {
 
     public static boolean contains(String[] list, String value){
         for(String item: list){
-            if(item == value){
+            if(item.equals(value)){
                 return true;
             }
         }

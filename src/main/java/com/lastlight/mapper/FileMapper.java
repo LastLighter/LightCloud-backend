@@ -2,6 +2,8 @@ package com.lastlight.mapper;
 
 import com.lastlight.entity.FileEntity;
 import com.lastlight.entity.dto.FileQueryDto;
+import com.lastlight.entity.dto.QueryDto;
+import com.lastlight.entity.vo.FileVo;
 import org.apache.ibatis.annotations.*;
 
 @Mapper
@@ -14,6 +16,9 @@ public interface FileMapper {
 
     @Select("SELECT * FROM file WHERE user_id = #{userId} AND file_parent = #{fileParent} AND folder_type = 1 AND `status` = 5 LIMIT #{offset}, #{pageSize}")
     FileEntity[] getDirByUserIdAndParent(FileQueryDto fileQueryDto);
+
+    @Select("SELECT file.*, u.nick_name FROM file JOIN user u ON u.uid = file.user_id ORDER BY create_time DESC LIMIT #{offset}, #{pageSize}")
+    FileVo[] get(QueryDto queryDto);
 
     @Select("SELECT * FROM file WHERE file_parent = #{fileParent}")
     FileEntity[] getByFileParent(@Param("fileParent") String fileParent);
@@ -54,6 +59,12 @@ public interface FileMapper {
     @Select("SELECT COUNT(*) FROM file WHERE file_path = #{filePath}")
     Integer countByFilePath(String filePath);
 
+    @Select("SELECT COUNT(*) FROM file")
+    Integer getSize();
+
     @Select("SELECT * FROM file WHERE `status` = #{status} AND user_id = #{uid}")
     FileEntity[] listByStatusAndUID(Long uid,Integer status);
+
+    @Select("SELECT * FROM file WHERE `name` like CONCAT('%',#{keyword},'%') AND user_id = #{uid} AND`status` = 5")
+    FileEntity[] listByKeyword(Long uid,String keyword);
 }

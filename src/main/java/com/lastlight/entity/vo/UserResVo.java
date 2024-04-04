@@ -5,12 +5,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class UserVo {
-    private String token;
+public class UserResVo {
     private Long uid;
     private String nickName;
     private String email;
-    private String avatarName;
     private LocalDateTime createTime;
     private LocalDateTime lastLoginTime ;
     private Integer status;

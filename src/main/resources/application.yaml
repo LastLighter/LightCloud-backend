@@ -29,7 +29,7 @@ spring:
   data:
     redis:
       port: 6379
-      host: 172.18.30.13
+      host: 172.18.30.14
       # 切换客户端的库，默认是lettuce
       client-type: lettuce
       lettuce:

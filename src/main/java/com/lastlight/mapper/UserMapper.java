@@ -18,6 +18,9 @@ public interface UserMapper {
     @Select("SELECT * FROM user WHERE `email` = #{email}")
     User getByEmail(@Param("email")String email);
 
+    @Select("SELECT count(*) FROM user")
+    Integer getSize();
+
     @Update("UPDATE user SET `nick_name`=#{nickName}, `avatar_name`=#{avatarName}, `last_login_time`=#{lastLoginTime}, `status`=#{status}, `total_space`= #{totalSpace} WHERE `uid`=#{uid}")
     void updateById(User user);
 

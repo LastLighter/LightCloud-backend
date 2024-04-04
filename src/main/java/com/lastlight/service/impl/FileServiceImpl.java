@@ -8,6 +8,8 @@ import com.lastlight.entity.User;
 import com.lastlight.entity.dto.FileQueryDto;
 import com.lastlight.entity.dto.FileUploadDto;
 import com.lastlight.entity.dto.FileUploadResDto;
+import com.lastlight.entity.dto.QueryDto;
+import com.lastlight.entity.vo.FileVo;
 import com.lastlight.entity.vo.UserVo;
 import com.lastlight.exception.CustomException;
 import com.lastlight.exception.SpaceNotEnoughException;
@@ -83,6 +85,14 @@ public class FileServiceImpl implements FileService {
             fileQueryDto.setOffset((fileQueryDto.getPage() - 1) * fileQueryDto.getPageSize());
         }
         return fileMapper.getDirByUserIdAndParent(fileQueryDto);
+    }
+
+    @Override
+    public FileVo[] listQuery(QueryDto dto) {
+        if(dto.getOffset() == null) {
+            dto.setOffset((dto.getPage() - 1) * dto.getPageSize());
+        }
+        return fileMapper.get(dto);
     }
 
     @Override
@@ -332,6 +342,11 @@ public class FileServiceImpl implements FileService {
             }
         }
         throw new CustomException("无权限操作");
+    }
+
+    @Override
+    public FileEntity[] search(String keyword, Long uid) {
+        return fileMapper.listByKeyword(uid, keyword);
     }
 
     @Override
@@ -599,5 +614,10 @@ public class FileServiceImpl implements FileService {
     @Override
     public FileEntity[] listByStatusAndUID(Long uid, Integer status) {
         return fileMapper.listByStatusAndUID(uid, status);
+    }
+
+    @Override
+    public Integer getSize() {
+        return fileMapper.getSize();
     }
 }

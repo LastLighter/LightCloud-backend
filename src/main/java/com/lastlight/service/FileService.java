@@ -4,6 +4,8 @@ import com.lastlight.entity.FileEntity;
 import com.lastlight.entity.dto.FileQueryDto;
 import com.lastlight.entity.dto.FileUploadDto;
 import com.lastlight.entity.dto.FileUploadResDto;
+import com.lastlight.entity.dto.QueryDto;
+import com.lastlight.entity.vo.FileVo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -13,14 +15,17 @@ public interface FileService {
     FileEntity[] listQueryByUserIdAndParent(FileQueryDto fileQueryDto);
     FileEntity[] listQueryDirByUserIdAndParent(FileQueryDto fileQueryDto);
     FileEntity[] listQueryByUserIdAndCategory(FileQueryDto fileQueryDto);
+    FileVo[] listQuery(QueryDto dto);
     FileEntity[] listQueryByMd5(FileQueryDto fileQueryDto);
     FileEntity[] listByParent(FileQueryDto fileQueryDto);
     Integer getSizeByParentAndCategory(Long uid, String fileParent, int fileCategory);
+    Integer getSize();
     FileEntity queryByFid(String fid);
     FileUploadResDto upload(FileUploadDto fileUploadDto);
     void getVideo(HttpServletResponse response,String fid, Long uid);
     void getTsFile(HttpServletResponse response,String fileName, Long uid);
     void getFile(HttpServletResponse response,String fid, Long uid);
+    FileEntity[] search(String keyword, Long uid);
     void newFolder(String name, String fid, Long uid);
     void rename(String name, String fid, Long uid);
     void move(String fids, String targetFid, Long uid);

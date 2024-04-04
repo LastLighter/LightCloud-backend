@@ -7,13 +7,13 @@ import com.lastlight.entity.User;
 import com.lastlight.entity.dto.QueryDto;
 import com.lastlight.entity.dto.ResetUserNameDto;
 import com.lastlight.entity.dto.UserDto;
+import com.lastlight.entity.vo.UserResVo;
 import com.lastlight.entity.vo.UserVo;
 import com.lastlight.exception.CustomException;
 import com.lastlight.mapper.UserMapper;
 import com.lastlight.security.UserSecurity;
 import com.lastlight.service.UserService;
 import com.lastlight.utils.*;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -107,9 +107,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto administratorLogin(UserDto userDto) {
+    public UserVo administratorLogin(UserDto userDto) {
         User user = userMapper.getByEmail(userDto.getEmail());
-        if (user == null || userDto.getPassword() != user.getPassword()) {
+        if (user == null || userDto.getPassword().equals(user.getPassword())) {
             throw  new CustomException("账号或密码错误");
         }
 
@@ -120,20 +120,17 @@ public class UserServiceImpl implements UserService {
             throw new CustomException("非管理员用户");
         }
 
-        checkStatus(userDto);
+        checkStatus(user);
         //update last login time
         user.setLastLoginTime(LocalDateTime.now());
         userMapper.updateById(user);
 
-        UserDto resDto = new UserDto();
-        BeanUtils.copyProperties(user, resDto);
-        String token = userSecurity.createToken(userDto.getUid(), Constant.USER_IDENTITY_ADMINISTRATOR);
-        resDto.setToken(token);
+        UserVo resVo = new UserVo();
+        BeanUtils.copyProperties(user, resVo);
+        String token = userSecurity.createToken(resVo.getUid(), Constant.USER_IDENTITY_ADMINISTRATOR);
+        resVo.setToken(token);
 
-        //stores token and uid in redis
-        redisTemplate.opsForValue().set(token, user.getUid());
-
-        return resDto;
+        return resVo;
     }
 
     @Override
@@ -159,7 +156,7 @@ public class UserServiceImpl implements UserService {
             User user = userMapper.getById(id);
             File iconFile;
 
-            if(user.getAvatarName() == null){
+            if(user.getAvatarName() == null || user.getAvatarName().equals("")){
                 iconFile = new File(pathUtil.getDefaultAvatarPath());
             }else {
                 String iconPath = pathUtil.getAvatarFolderPath() + File.separator + user.getAvatarName();
@@ -225,8 +222,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User[] list(QueryDto dto) {
-        return userMapper.list(dto);
+    public List<UserResVo> list(QueryDto dto) {
+        if(dto.getOffset() == null) {
+            dto.setOffset((dto.getPage() - 1) * dto.getPageSize());
+        }
+        var list = userMapper.list(dto);
+        var res = new ArrayList<UserResVo>();
+        for(var item:list){
+            var temp = new UserResVo();
+            BeanUtils.copyProperties(item,temp);
+            res.add(temp);
+        }
+        return res;
     }
 
     @Override
@@ -243,5 +250,10 @@ public class UserServiceImpl implements UserService {
         }
 
         userMapper.updateById(user);
+    }
+
+    @Override
+    public Integer getSize() {
+        return userMapper.getSize();
     }
 }

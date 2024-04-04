@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+
 import static com.lastlight.utils.IDUtil.getUUID;
 
 @RestController
@@ -63,7 +65,7 @@ public class FileController {
     }
 
     @GetMapping("/{fid}")
-    @GlobalInterceptor(checkParams = true)
+    @GlobalInterceptor(checkParams = true, checkLogin = true)
     public void getFile(HttpServletResponse response, @PathVariable @VerifyBaseParam(required = true) String fid, String category, @Token String token){
         Long uid = userSecurity.getId(token);
         switch (category) {
@@ -73,6 +75,17 @@ public class FileController {
             case "other" -> fileService.getFile(response, fid, uid);
             default -> throw new CustomException("文件类型不存在");
         }
+    }
+
+    @GetMapping("/search")
+    @GlobalInterceptor(checkLogin = true)
+    public Result<FileEntity[]> searchFile(String keyword, @Token String token){
+        Long uid = userSecurity.getId(token);
+        FileEntity[] fileEntities = fileService.search(keyword, uid);
+        if(fileEntities == null){
+            return Result.success(new FileEntity[0]);
+        }
+        return Result.success(fileEntities);
     }
 
     @PostMapping("/newFolder")
